@@ -28,10 +28,20 @@ impl CounterModel {
 
 fn main() {
     App::new().run(|cx: &mut AppContext| {
-        cx.open_window(WindowOptions::default(), |cx| {
-            let view = RenderCounter::build(cx);
-            view
-        });
+        cx.open_window(
+            WindowOptions {
+                bounds: WindowBounds::Fixed(Bounds {
+                    origin: Default::default(),
+                    size: size(px(1000.), px(500.)).into(),
+                }),
+                ..Default::default()
+            },
+            |cx| {
+                let view = RenderCounter::build(cx);
+                view
+            },
+        );
+        cx.activate(true);
     })
 }
 
@@ -60,31 +70,33 @@ impl Render for RenderCounter {
             .child("Increment")
             .on_mouse_down(MouseButton::Left, move |_event, cx| {
                 std::dbg!("Incrementing counter");
-                CounterModel::update( | model, cx | {
-                    model.inner.update(cx, | model, cx | {
-                        model.count += 1;
-                        cx.notify();
-                    });
-                },
-                    cx
+                CounterModel::update(
+                    |model, cx| {
+                        model.inner.update(cx, |model, cx| {
+                            model.count += 1;
+                            cx.notify();
+                        });
+                    },
+                    cx,
                 )
             });
-    
+
         let decrement_button = div()
-        .bg(rgb(0x4caf50))
-        .text_color(rgb(0xffffff))
-        .child("Decrement")
-        .on_mouse_down(MouseButton::Left, move |_event, cx| {
-            std::dbg!("Decrementing counter");
-            CounterModel::update( | model, cx | {
-                model.inner.update(cx, | model, cx | {
-                    model.count -= 1;
-                    cx.notify();
-                });
-            },
-                cx
-            )
-        });
+            .bg(rgb(0x4caf50))
+            .text_color(rgb(0xffffff))
+            .child("Decrement")
+            .on_mouse_down(MouseButton::Left, move |_event, cx| {
+                std::dbg!("Decrementing counter");
+                CounterModel::update(
+                    |model, cx| {
+                        model.inner.update(cx, |model, cx| {
+                            model.count -= 1;
+                            cx.notify();
+                        });
+                    },
+                    cx,
+                )
+            });
 
         div()
             .flex()
@@ -94,12 +106,7 @@ impl Render for RenderCounter {
             .items_center()
             .text_xl()
             .text_color(rgb(0xffffff))
-            .child(
-                div()
-                    .flex()
-                    .flex_col()
-                    .children(
-                        vec![
+            .child(div().flex().flex_col().children(vec![
                             increment_button,
                             decrement_button,
                             div()
@@ -108,8 +115,6 @@ impl Render for RenderCounter {
                                 .child(
                                     format!("The number is: {}!", counter_ref.count.to_string())
                                 ),
-                        ]
-                    )
-            )            
+                        ]))
     }
 }
