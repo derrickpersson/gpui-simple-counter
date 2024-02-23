@@ -1,4 +1,4 @@
-## GPUI Counter Example
+## GPUI Simple Counter
 
 This builds out a simple example of how a counter works using GPUI.
 
