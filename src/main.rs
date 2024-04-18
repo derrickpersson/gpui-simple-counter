@@ -26,6 +26,8 @@ impl CounterModel {
     }
 }
 
+actions!(counter, [Quit]);
+
 fn main() {
     App::new().run(|cx: &mut AppContext| {
         cx.open_window(
@@ -42,6 +44,8 @@ fn main() {
             },
         );
         cx.activate(true);
+        cx.on_action(|_: &Quit, cx| cx.quit());
+        cx.bind_keys([KeyBinding::new("cmd-q", Quit, None)]);
     })
 }
 
